@@ -1,13 +1,13 @@
 package gui;
 
 import model.Allegati;
-import model.PdfFiller; // Importa la classe per la compilazione del PDF
+import model.PdfFiller;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URL; // Non strettamente necessario per le modifiche qui, ma va bene tenerlo
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.io.InputStream; // Aggiungi questo import
+import java.io.InputStream;
 
 public class Lavoro extends JFrame {
 
@@ -46,18 +46,16 @@ public class Lavoro extends JFrame {
 
         contentPane = new JPanel(new BorderLayout(10, 10));
 
-        // --- Pannello selezione modello PDF ---
         JPanel modelSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         modelSelectionPanel.setBorder(BorderFactory.createTitledBorder("Seleziona Modello Documento"));
 
-        initializePdfModels(); // Inizializza i modelli PDF basati sui nomi forniti
-        aziendaComboBox = new JComboBox<>(pdfModels.keySet().toArray(new String[0])); // Popola la JComboBox
+        initializePdfModels();
+        aziendaComboBox = new JComboBox<>(pdfModels.keySet().toArray(new String[0]));
 
         modelSelectionPanel.add(new JLabel("Azienda/Modello:"));
         modelSelectionPanel.add(aziendaComboBox);
         contentPane.add(modelSelectionPanel, BorderLayout.NORTH);
 
-        // --- Pannello input dati ---
         JPanel dataInputPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         dataInputPanel.setBorder(BorderFactory.createTitledBorder("Dati per la Compilazione"));
 
@@ -89,7 +87,6 @@ public class Lavoro extends JFrame {
 
         contentPane.add(dataInputPanel, BorderLayout.CENTER);
 
-        // --- Pannello Bottoni ---
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
 
         compilaButton = new JButton("Compila PDF");
@@ -125,19 +122,14 @@ public class Lavoro extends JFrame {
         addModel("Congiu", "SCHEDA CONGIU.pdf");
     }
 
-    // Metodo helper per aggiungere modelli e gestire errori di caricamento
     private void addModel(String modelName, String resourceFileName) {
-        // Usa getResourceAsStream per ottenere un InputStream, che funziona sia da filesystem che da JAR
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourceFileName)) {
             if (is != null) {
-                // Crea un file temporaneo per copiare la risorsa
                 File tempFile = File.createTempFile("pdf_template_", ".pdf");
-                tempFile.deleteOnExit(); // Assicura che il file temporaneo venga eliminato all'uscita
+                tempFile.deleteOnExit();
 
-                // Copia il contenuto del file dalla risorsa all'InputStream al file temporaneo
                 Files.copy(is, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-                // Memorizza il percorso assoluto del file temporaneo
                 pdfModels.put(modelName, tempFile.getAbsolutePath());
                 System.out.println("Modello '" + modelName + "' caricato da risorsa a file temporaneo: " + tempFile.getAbsolutePath());
             } else {
@@ -151,10 +143,8 @@ public class Lavoro extends JFrame {
         }
     }
 
-
     private void compilePdf() {
         try {
-            // Raccogli i dati dai campi di testo
             String numeroOds = numeroOdsField.getText();
             Date dataOds = parseDate(dataOdsField.getText());
             Date scadenzaOds = parseDate(scadenzaOdsField.getText());
@@ -171,9 +161,7 @@ public class Lavoro extends JFrame {
             String selectedModelName = (String) aziendaComboBox.getSelectedItem();
             String templatePdfPath = pdfModels.get(selectedModelName);
 
-            // AGGIUNGI QUESTO PER IL DEBUGGING:
             System.out.println("Percorso Template PDF Selezionato: " + templatePdfPath);
-
 
             if (templatePdfPath == null || templatePdfPath.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Nessun modello PDF selezionato o percorso non valido. Verificare i file in resources.", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -213,6 +201,12 @@ public class Lavoro extends JFrame {
         fileChooser.setDialogTitle("Salva PDF Compilato");
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Documents", "pdf"));
 
+        // Imposta la directory iniziale sul Desktop
+        File desktopDir = new File(System.getProperty("user.home"), "Desktop");
+        if (desktopDir.exists() && desktopDir.isDirectory()) {
+            fileChooser.setCurrentDirectory(desktopDir);
+        }
+
         String suggestedFileName = "Documento_" + aziendaComboBox.getSelectedItem() + "_" + numeroOdsField.getText().replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf";
         if (suggestedFileName.length() > 50) {
             suggestedFileName = "Documento_Compilato.pdf";
@@ -227,11 +221,28 @@ public class Lavoro extends JFrame {
                 fileToSave = new File(fileToSave.getAbsolutePath() + ".pdf");
             }
 
+            // --- Logica per la conferma di sovrascrittura ---
             try {
+                if (fileToSave.exists()) {
+                    int response = JOptionPane.showConfirmDialog(
+                            this,
+                            "Il file '" + fileToSave.getName() + "' esiste già. Vuoi sostituirlo?",
+                            "Conferma Sovrascrittura",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
+                    if (response == JOptionPane.NO_OPTION) {
+                        JOptionPane.showMessageDialog(this, "Salvataggio annullato dall'utente.", "Annullato", JOptionPane.INFORMATION_MESSAGE);
+                        return; // Esce dal metodo senza salvare
+                    }
+                    // Se la risposta è YES_OPTION, il codice prosegue e sovrascrive
+                }
+
                 Files.copy(
                         new File(lastCompiledFilePath).toPath(),
                         fileToSave.toPath(),
-                        StandardCopyOption.REPLACE_EXISTING
+                        StandardCopyOption.REPLACE_EXISTING // Questo garantisce la sovrascrittura se il file esiste
                 );
                 JOptionPane.showMessageDialog(this, "PDF salvato con successo in:\n" + fileToSave.getAbsolutePath(), "Successo", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
