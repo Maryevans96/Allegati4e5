@@ -1,13 +1,13 @@
 package gui;
 
-import model.Allegati; // Importa la classe Allegati corretta
-import model.PdfFiller; // Importa la classe per la compilazione del PDF (corretto l'import)
+import model.Allegati;
+import model.PdfFiller; // Importa la classe per la compilazione del PDF
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL; // Necessario per getClass().getClassLoader().getResource()
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.io.InputStream; // Aggiungi questo import
 
 public class Lavoro extends JFrame {
 
@@ -118,8 +119,6 @@ public class Lavoro extends JFrame {
     private void initializePdfModels() {
         pdfModels = new LinkedHashMap<>();
 
-        // Utilizza getClass().getClassLoader().getResource() per caricare i file dalla cartella resources
-        // Assicurati che i nomi dei file qui corrispondano ESATTAMENTE ai nomi dei file nella tua cartella resources.
         addModel("Enrico", "SCHEDA ENRICO.pdf");
         addModel("Cristoforo", "SCHEDA CRISTOFORO.pdf");
         addModel("Francesco", "SCHEDA FRANCESCO.pdf");
@@ -128,16 +127,27 @@ public class Lavoro extends JFrame {
 
     // Metodo helper per aggiungere modelli e gestire errori di caricamento
     private void addModel(String modelName, String resourceFileName) {
-        URL url = getClass().getClassLoader().getResource(resourceFileName);
-        if (url != null) {
-            // Nota: url.getPath() potrebbe non funzionare perfettamente per risorse all'interno di un JAR
-            // in tutti i contesti. Per la compilazione PDF, PDFBox di solito lo gestisce.
-            // Se incontri problemi in produzione (JAR), potresti dover copiare la risorsa
-            // in un file temporaneo sul filesystem prima di passarlo a PDFBox.
-            pdfModels.put(modelName, url.getPath());
-        } else {
-            System.err.println("Errore: Il file " + resourceFileName + " (per il modello " + modelName + ") non è stato trovato nella cartella resources.");
-            JOptionPane.showMessageDialog(this, "Attenzione: Il modello PDF '" + modelName + "' (" + resourceFileName + ") non è stato trovato. Non sarà disponibile.", "Risorsa Mancante", JOptionPane.WARNING_MESSAGE);
+        // Usa getResourceAsStream per ottenere un InputStream, che funziona sia da filesystem che da JAR
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourceFileName)) {
+            if (is != null) {
+                // Crea un file temporaneo per copiare la risorsa
+                File tempFile = File.createTempFile("pdf_template_", ".pdf");
+                tempFile.deleteOnExit(); // Assicura che il file temporaneo venga eliminato all'uscita
+
+                // Copia il contenuto del file dalla risorsa all'InputStream al file temporaneo
+                Files.copy(is, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                // Memorizza il percorso assoluto del file temporaneo
+                pdfModels.put(modelName, tempFile.getAbsolutePath());
+                System.out.println("Modello '" + modelName + "' caricato da risorsa a file temporaneo: " + tempFile.getAbsolutePath());
+            } else {
+                System.err.println("Errore: Il file " + resourceFileName + " (per il modello " + modelName + ") non è stato trovato nella cartella resources.");
+                JOptionPane.showMessageDialog(this, "Attenzione: Il modello PDF '" + modelName + "' (" + resourceFileName + ") non è stato trovato. Non sarà disponibile.", "Risorsa Mancante", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (IOException e) {
+            System.err.println("Errore I/O durante il caricamento del modello " + modelName + " da risorsa: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Errore durante il caricamento del modello PDF '" + modelName + "': " + e.getMessage(), "Errore Caricamento", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -160,6 +170,10 @@ public class Lavoro extends JFrame {
 
             String selectedModelName = (String) aziendaComboBox.getSelectedItem();
             String templatePdfPath = pdfModels.get(selectedModelName);
+
+            // AGGIUNGI QUESTO PER IL DEBUGGING:
+            System.out.println("Percorso Template PDF Selezionato: " + templatePdfPath);
+
 
             if (templatePdfPath == null || templatePdfPath.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Nessun modello PDF selezionato o percorso non valido. Verificare i file in resources.", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -243,9 +257,8 @@ public class Lavoro extends JFrame {
         descrizioneInterventoField.setText("");
         inizioLavoriField.setText("");
         fineLavoriField.setText("");
-        scaricaButton.setEnabled(false); // Disabilita il bottone di scarica
-        lastCompiledFilePath = null; // Rimuovi il riferimento al file compilato temporaneo
-        // Il file temporaneo verrà cancellato all'uscita della JVM grazie a deleteOnExit()
+        scaricaButton.setEnabled(false);
+        lastCompiledFilePath = null;
         JOptionPane.showMessageDialog(this, "Campi puliti. Il PDF compilato precedente non è più disponibile per il download diretto.", "Campi Resettati", JOptionPane.INFORMATION_MESSAGE);
     }
 
