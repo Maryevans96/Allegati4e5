@@ -16,49 +16,69 @@ public class PdfFiller {
         PDDocument pdfDocument = null;
         try {
             pdfDocument = PDDocument.load(new File(templatePath));
-            PDPage firstPage = pdfDocument.getPage(0); // Lavoriamo sulla prima pagina
 
-            PDPageContentStream contentStream = new PDPageContentStream(pdfDocument, firstPage, PDPageContentStream.AppendMode.APPEND, true, true);
+            // Ensure the document has at least two pages if you intend to fill the second one
+            if (pdfDocument.getNumberOfPages() < 2) {
+                System.err.println("The PDF document does not have a second page for model: " + modelName);
+                // You might want to throw an exception or handle this case differently
+                return;
+            }
+
+            PDPage firstPage = pdfDocument.getPage(0); // Lavoriamo sulla prima pagina
+            PDPage secondPage = pdfDocument.getPage(1); // Lavoriamo sulla seconda pagina
+
+            PDPageContentStream contentStreamFirstPage = new PDPageContentStream(pdfDocument, firstPage, PDPageContentStream.AppendMode.APPEND, true, true);
+            PDPageContentStream contentStreamSecondPage = new PDPageContentStream(pdfDocument, secondPage, PDPageContentStream.AppendMode.APPEND, true, true);
+
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
             // --- Logica per la compilazione in base al modello selezionato ---
             switch (modelName) {
                 case "Enrico":
-                    // Coordinate per "SCHEDA ENRICO.pdf" (basate sulle tue indicazioni precedenti)
-                    addTextToPdf(contentStream, datiAllegato.getNumeroOds(), 470, 683, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 267, 697, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 267, 683, 10);
-                    addTextToPdf(contentStream, datiAllegato.getVia(), 220, 670, 10);
-                    addTextToPdf(contentStream, datiAllegato.getDanneggiante(), 165, 645, 10);
-                    // Per la descrizione, se è multilinea, dovrai implementare una logica più complessa qui
-                    addTextToPdf(contentStream, datiAllegato.getDescrizioneIntervento(), 195, 560, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 200, 223, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 470, 223, 10);
+                    addTextToPdf(contentStreamFirstPage, datiAllegato.getNumeroOds(), 470, 683, 10);
+                    addTextToPdf(contentStreamFirstPage, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 267, 697, 10);
+                    addTextToPdf(contentStreamFirstPage, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 267, 683, 10);
+                    addTextToPdf(contentStreamFirstPage, datiAllegato.getVia(), 220, 670, 10);
+                    addTextToPdf(contentStreamFirstPage, datiAllegato.getDanneggiante(), 165, 645, 10);
+                    // For description, if it's multi-line, you'll need more complex logic here
+                    addTextToPdf(contentStreamFirstPage, datiAllegato.getDescrizioneIntervento(), 195, 560, 10);
+                    addTextToPdf(contentStreamFirstPage, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 200, 223, 10);
+                    addTextToPdf(contentStreamFirstPage, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 470, 223, 10);
+
+
+
+                    addTextToPdf(contentStreamSecondPage, datiAllegato.getNumeroOds(), 60, 337, 10); // Adjusted for a smaller font if inside table
+
+                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 125,337, 10);
+
+                    addTextToPdf(contentStreamSecondPage, datiAllegato.getVia(), 190,337,10);
+
+                    addTextToPdf(contentStreamSecondPage, datiAllegato.getDescrizioneIntervento(), 320,337,10);
+
+                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 340, 427, 10); // After "INIZIATE il"
+                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 450, 427, 10); // After "TERMINATE il"
+
                     break;
                 case "Cristoforo":
-                    // *** INSERISCI QUI LE COORDINATE SPECIFICHE PER "CRISTOFORO_TEMPLATE.pdf" ***
-                    // Esempio:
-                    // addTextToPdf(contentStream, datiAllegato.getNumeroOds(), X_NUMERO, Y_NUMERO, FONTSIZE);
-                    // addTextToPdf(contentStream, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", X_DATA, Y_DATA, FONTSIZE);
-                    // ... e così via per tutti i campi
-                    System.out.println("Compilazione per modello Cristoforo (coordinate da definire)");
+                    // *** INSERT SPECIFIC COORDINATES FOR "CRISTOFORO_TEMPLATE.pdf" ***
+                    System.out.println("Compilation for Cristoforo model (coordinates to be defined)");
                     break;
                 case "Francesco":
-                    // *** INSERISCI QUI LE COORDINATE SPECIFICHE PER "FRANCESCO_TEMPLATE.pdf" ***
-                    System.out.println("Compilazione per modello Francesco (coordinate da definire)");
+                    // *** INSERT SPECIFIC COORDINATES FOR "FRANCESCO_TEMPLATE.pdf" ***
+                    System.out.println("Compilation for Francesco model (coordinates to be defined)");
                     break;
                 case "Congiu":
-                    // *** INSERISCI QUI LE COORDINATE SPECIFICHE PER "CONGIU_TEMPLATE.pdf" ***
-                    System.out.println("Compilazione per modello Congiu (coordinate da definire)");
+                    // *** INSERT SPECIFIC COORDINATES FOR "CONGIU_TEMPLATE.pdf" ***
+                    System.out.println("Compilation for Congiu model (coordinates to be defined)");
                     break;
                 default:
-                    System.err.println("Modello PDF non riconosciuto o non gestito: " + modelName);
-                    // Potresti voler lanciare un'eccezione o mostrare un messaggio all'utente
+                    System.err.println("Unrecognized or unhandled PDF model: " + modelName);
                     break;
             }
 
-            contentStream.close();
+            contentStreamFirstPage.close();
+            contentStreamSecondPage.close(); // Close the second page's content stream
             pdfDocument.save(outputPath);
 
         } finally {
