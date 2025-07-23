@@ -4,18 +4,18 @@ import model.Allegati;
 import model.PdfFiller;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL; // Non strettamente necessario per le modifiche qui, ma va bene tenerlo
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.io.InputStream;
 
 public class Lavoro extends JFrame {
 
@@ -45,19 +45,28 @@ public class Lavoro extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         contentPane = new JPanel(new BorderLayout(10, 10));
+        contentPane.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         JPanel modelSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        modelSelectionPanel.setBorder(BorderFactory.createTitledBorder("Seleziona Modello Documento"));
+        // --- MODIFICA QUI: Aggiungi un CompoundBorder per il pannello di selezione modello ---
+        modelSelectionPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Seleziona Modello Documento"),
+                new EmptyBorder(5, 10, 5, 10) // Margine interno: top, left, bottom, right
+        ));
+        // ----------------------------------------------------------------------------------
 
         initializePdfModels();
         aziendaComboBox = new JComboBox<>(pdfModels.keySet().toArray(new String[0]));
 
-        modelSelectionPanel.add(new JLabel("Azienda/Modello:"));
+        modelSelectionPanel.add(new JLabel("Modello:"));
         modelSelectionPanel.add(aziendaComboBox);
         contentPane.add(modelSelectionPanel, BorderLayout.NORTH);
 
         JPanel dataInputPanel = new JPanel(new GridLayout(0, 2, 5, 5));
-        dataInputPanel.setBorder(BorderFactory.createTitledBorder("Dati per la Compilazione"));
+        dataInputPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Dati per la Compilazione"),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
 
         numeroOdsField = new JTextField(20);
         dataOdsField = new JTextField(20);
@@ -88,6 +97,8 @@ public class Lavoro extends JFrame {
         contentPane.add(dataInputPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        // Se desideri un margine interno per il pannello dei bottoni (es. solo in alto):
+        // buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         compilaButton = new JButton("Compila PDF");
         compilaButton.addActionListener(e -> compilePdf());
@@ -201,7 +212,6 @@ public class Lavoro extends JFrame {
         fileChooser.setDialogTitle("Salva PDF Compilato");
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Documents", "pdf"));
 
-        // Imposta la directory iniziale sul Desktop
         File desktopDir = new File(System.getProperty("user.home"), "Desktop");
         if (desktopDir.exists() && desktopDir.isDirectory()) {
             fileChooser.setCurrentDirectory(desktopDir);
@@ -221,7 +231,6 @@ public class Lavoro extends JFrame {
                 fileToSave = new File(fileToSave.getAbsolutePath() + ".pdf");
             }
 
-            // --- Logica per la conferma di sovrascrittura ---
             try {
                 if (fileToSave.exists()) {
                     int response = JOptionPane.showConfirmDialog(
@@ -234,15 +243,14 @@ public class Lavoro extends JFrame {
 
                     if (response == JOptionPane.NO_OPTION) {
                         JOptionPane.showMessageDialog(this, "Salvataggio annullato dall'utente.", "Annullato", JOptionPane.INFORMATION_MESSAGE);
-                        return; // Esce dal metodo senza salvare
+                        return;
                     }
-                    // Se la risposta è YES_OPTION, il codice prosegue e sovrascrive
                 }
 
                 Files.copy(
                         new File(lastCompiledFilePath).toPath(),
                         fileToSave.toPath(),
-                        StandardCopyOption.REPLACE_EXISTING // Questo garantisce la sovrascrittura se il file esiste
+                        StandardCopyOption.REPLACE_EXISTING
                 );
                 JOptionPane.showMessageDialog(this, "PDF salvato con successo in:\n" + fileToSave.getAbsolutePath(), "Successo", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
@@ -263,9 +271,9 @@ public class Lavoro extends JFrame {
         numeroOdsField.setText("");
         dataOdsField.setText("");
         scadenzaOdsField.setText("");
+        descrizioneInterventoField.setText("");
         viaField.setText("");
         danneggianteField.setText("");
-        descrizioneInterventoField.setText("");
         inizioLavoriField.setText("");
         fineLavoriField.setText("");
         scaricaButton.setEnabled(false);
