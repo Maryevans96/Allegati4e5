@@ -56,8 +56,8 @@ public class PdfFiller {
 
                     addTextToPdf(contentStreamSecondPage, datiAllegato.getDescrizioneIntervento(), 320,337,10);
 
-                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 340, 427, 10); // After "INIZIATE il"
-                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 450, 427, 10); // After "TERMINATE il"
+                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 490, 277, 10); // After "INIZIATE il"
+                    addTextToPdf(contentStreamSecondPage, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 490, 252, 10); // After "TERMINATE il"
 
                     break;
                 case "Cristoforo":
