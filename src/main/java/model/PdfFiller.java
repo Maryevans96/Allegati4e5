@@ -26,7 +26,7 @@ public class PdfFiller {
             switch (modelName) {
                 case "Enrico":
                     // Coordinate per "SCHEDA ENRICO.pdf" (basate sulle tue indicazioni precedenti)
-                    addTextToPdf(contentStream, datiAllegato.getNumeroOds(), 500, 508, 10);
+                    addTextToPdf(contentStream, datiAllegato.getNumeroOds(), 470, 683, 10);
                     addTextToPdf(contentStream, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 160, 508, 10);
                     addTextToPdf(contentStream, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 370, 508, 10);
                     addTextToPdf(contentStream, datiAllegato.getVia(), 550, 508, 10);
