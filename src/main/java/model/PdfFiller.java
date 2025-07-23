@@ -27,9 +27,9 @@ public class PdfFiller {
                 case "Enrico":
                     // Coordinate per "SCHEDA ENRICO.pdf" (basate sulle tue indicazioni precedenti)
                     addTextToPdf(contentStream, datiAllegato.getNumeroOds(), 470, 683, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 160, 508, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 370, 508, 10);
-                    addTextToPdf(contentStream, datiAllegato.getVia(), 550, 508, 10);
+                    addTextToPdf(contentStream, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 267, 697, 10);
+                    addTextToPdf(contentStream, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 267, 683, 10);
+                    addTextToPdf(contentStream, datiAllegato.getVia(), 220, 670, 10);
                     addTextToPdf(contentStream, datiAllegato.getDanneggiante(), 120, 700, 10);
                     // Per la descrizione, se è multilinea, dovrai implementare una logica più complessa qui
                     addTextToPdf(contentStream, datiAllegato.getDescrizioneIntervento(), 140, 400, 10);
