@@ -30,11 +30,11 @@ public class PdfFiller {
                     addTextToPdf(contentStream, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 267, 697, 10);
                     addTextToPdf(contentStream, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 267, 683, 10);
                     addTextToPdf(contentStream, datiAllegato.getVia(), 220, 670, 10);
-                    addTextToPdf(contentStream, datiAllegato.getDanneggiante(), 120, 700, 10);
+                    addTextToPdf(contentStream, datiAllegato.getDanneggiante(), 165, 645, 10);
                     // Per la descrizione, se è multilinea, dovrai implementare una logica più complessa qui
-                    addTextToPdf(contentStream, datiAllegato.getDescrizioneIntervento(), 140, 400, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 160, 192, 10);
-                    addTextToPdf(contentStream, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 170, 142, 10);
+                    addTextToPdf(contentStream, datiAllegato.getDescrizioneIntervento(), 195, 560, 10);
+                    addTextToPdf(contentStream, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 200, 223, 10);
+                    addTextToPdf(contentStream, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 470, 223, 10);
                     break;
                 case "Cristoforo":
                     // *** INSERISCI QUI LE COORDINATE SPECIFICHE PER "CRISTOFORO_TEMPLATE.pdf" ***
