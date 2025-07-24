@@ -83,7 +83,7 @@ public class Lavoro extends JFrame {
         dataInputPanel.add(dataOdsField);
         dataInputPanel.add(new JLabel("Scadenza O.d.S. (gg/mm/aaaa):"));
         dataInputPanel.add(scadenzaOdsField);
-        dataInputPanel.add(new JLabel("Via (Civico):"));
+        dataInputPanel.add(new JLabel("Via:"));
         dataInputPanel.add(viaField);
         dataInputPanel.add(new JLabel("Danneggiante:"));
         dataInputPanel.add(danneggianteField);
@@ -217,7 +217,7 @@ public class Lavoro extends JFrame {
             fileChooser.setCurrentDirectory(desktopDir);
         }
 
-        String suggestedFileName = "Documento_" + aziendaComboBox.getSelectedItem() + "_" + numeroOdsField.getText().replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf";
+        String suggestedFileName = numeroOdsField.getText().replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf";
         if (suggestedFileName.length() > 50) {
             suggestedFileName = "Documento_Compilato.pdf";
         }
