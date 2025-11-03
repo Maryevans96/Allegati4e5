@@ -1,1 +1,1 @@
-# Programma per la compilazione BDL e TDL per ods
+# Programma per la compilazione BDL e TDL degli ods
