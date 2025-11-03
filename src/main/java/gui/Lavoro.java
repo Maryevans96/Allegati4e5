@@ -48,12 +48,12 @@ public class Lavoro extends JFrame {
         contentPane.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         JPanel modelSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        // --- MODIFICA QUI: Aggiungi un CompoundBorder per il pannello di selezione modello ---
+
         modelSelectionPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Seleziona Modello Documento"),
                 new EmptyBorder(5, 10, 5, 10) // Margine interno: top, left, bottom, right
         ));
-        // ----------------------------------------------------------------------------------
+
 
         initializePdfModels();
         aziendaComboBox = new JComboBox<>(pdfModels.keySet().toArray(new String[0]));
@@ -97,8 +97,6 @@ public class Lavoro extends JFrame {
         contentPane.add(dataInputPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        // Se desideri un margine interno per il pannello dei bottoni (es. solo in alto):
-        // buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         compilaButton = new JButton("Compila PDF");
         compilaButton.addActionListener(e -> compilePdf());

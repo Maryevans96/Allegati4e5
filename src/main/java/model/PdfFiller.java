@@ -17,15 +17,14 @@ public class PdfFiller {
         try {
             pdfDocument = PDDocument.load(new File(templatePath));
 
-            // Ensure the document has at least two pages if you intend to fill the second one
             if (pdfDocument.getNumberOfPages() < 2) {
                 System.err.println("The PDF document does not have a second page for model: " + modelName);
-                // You might want to throw an exception or handle this case differently
+
                 return;
             }
 
-            PDPage firstPage = pdfDocument.getPage(0); // Lavoriamo sulla prima pagina
-            PDPage secondPage = pdfDocument.getPage(1); // Lavoriamo sulla seconda pagina
+            PDPage firstPage = pdfDocument.getPage(0); // Lavoro sulla prima pagina
+            PDPage secondPage = pdfDocument.getPage(1); // Lavoro sulla seconda pagina
 
             PDPageContentStream contentStreamFirstPage = new PDPageContentStream(pdfDocument, firstPage, PDPageContentStream.AppendMode.APPEND, true, true);
             PDPageContentStream contentStreamSecondPage = new PDPageContentStream(pdfDocument, secondPage, PDPageContentStream.AppendMode.APPEND, true, true);
@@ -33,23 +32,23 @@ public class PdfFiller {
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-            // --- Logica per la compilazione in base al modello selezionato ---
-            // This code is already correct if using Java 14+ and all PDFs have identical field layouts.
+            // Logica per la compilazione in base al modello selezionato
+
             switch (modelName) {
-                case "Enrico", "Congiu", "Francesco", "Cristoforo": // Multi-case label for Java 14+
-                    // --- Code for First Page ---
+                case "Enrico", "Congiu", "Francesco", "Cristoforo":
+                    // Code for First Page
                     addTextToPdf(contentStreamFirstPage, datiAllegato.getNumeroOds(), 470, 683, 10);
                     addTextToPdf(contentStreamFirstPage, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 267, 697, 10);
                     addTextToPdf(contentStreamFirstPage, (datiAllegato.getScadenzaOds() != null) ? sdf.format(datiAllegato.getScadenzaOds()) : "", 267, 683, 10);
                     addTextToPdf(contentStreamFirstPage, datiAllegato.getVia(), 220, 670, 10);
                     addTextToPdf(contentStreamFirstPage, datiAllegato.getDanneggiante(), 165, 645, 10);
-                    // For description, if it's multi-line, you'll need more complex logic here
+
                     addTextToPdf(contentStreamFirstPage, datiAllegato.getDescrizioneIntervento(), 195, 560, 10);
                     addTextToPdf(contentStreamFirstPage, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 200, 223, 10);
                     addTextToPdf(contentStreamFirstPage, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 470, 223, 10);
 
                     // --- Code for Second Page ---
-                    addTextToPdf(contentStreamSecondPage, datiAllegato.getNumeroOds(), 60, 337, 10); // Adjusted for a smaller font if inside table
+                    addTextToPdf(contentStreamSecondPage, datiAllegato.getNumeroOds(), 60, 337, 10);
                     addTextToPdf(contentStreamSecondPage, (datiAllegato.getDataOds() != null) ? sdf.format(datiAllegato.getDataOds()) : "", 125,337, 10);
                     addTextToPdf(contentStreamSecondPage, datiAllegato.getVia(), 190,337,10);
                     addTextToPdf(contentStreamSecondPage, datiAllegato.getDescrizioneIntervento(), 320,337,10);
@@ -62,7 +61,7 @@ public class PdfFiller {
             }
 
             contentStreamFirstPage.close();
-            contentStreamSecondPage.close(); // Close the second page's content stream
+            contentStreamSecondPage.close();
             pdfDocument.save(outputPath);
 
         } finally {
