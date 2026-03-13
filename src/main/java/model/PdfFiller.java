@@ -52,6 +52,7 @@ public class PdfFiller {
             // This code is already correct if using Java 14+ and all PDFs have identical field layouts.
             switch (modelName) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 case "Enrico", "Congiu", "Francesco", "Cristoforo":
                     // Code for First Page
                     addTextToPdf(contentStreamFirstPage, datiAllegato.getNumeroOds(), 482, 697, 10);
@@ -72,6 +73,8 @@ public class PdfFiller {
                     addTextToPdf(contentStreamSecondPage, (datiAllegato.getInizioLavori() != null) ? sdf.format(datiAllegato.getInizioLavori()) : "", 490, 270, 10); // After "INIZIATE il"
                     addTextToPdf(contentStreamSecondPage, (datiAllegato.getFineLavori() != null) ? sdf.format(datiAllegato.getFineLavori()) : "", 490, 245, 10); // After "TERMINATE il"
 =======
+=======
+>>>>>>> parent of bace526 (modifiche varie)
                 case "Enrico", "Congiu", "Francesco", "Cristoforo": // Multi-case label for Java 14+
                     // --- Code for First Page ---
                     addTextToPdf(contentStreamFirstPage, datiAllegato.getNumeroOds(), 470, 683, 10);
